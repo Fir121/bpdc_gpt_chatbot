@@ -1,0 +1,5 @@
+chatbot/*
+*.pdf
+data/*
+constants.py
+*.json
