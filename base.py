@@ -3,25 +3,37 @@ import os
 os.environ["OPENAI_API_KEY"] = constants.openapi_key
 
 
-from llama_index import GPTSimpleVectorIndex
+from llama_index import QuestionAnswerPrompt, GPTVectorStoreIndex
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.chat_models import ChatOpenAI
-from llama_index.langchain_helpers.agents import LlamaToolkit, create_llama_chat_agent, IndexToolConfig
+from llama_index.langchain_helpers.agents import LlamaToolkit, create_llama_chat_agent, IndexToolConfig, LlamaIndexTool
 from langchain.chat_models import ChatOpenAI
 
-index = GPTSimpleVectorIndex.load_from_disk('index.json')
-indexes = [
-    IndexToolConfig(
-            index=index, 
-            name="Vector Index",
-            description="useful for when you want to answer queries about ACM",
-            index_query_kwargs={"similarity_top_k": 3},
-            tool_kwargs={"return_direct": True}
-    )
-]
+# try instead keywordindex
+# use custom QuestionAnswerPrompt
+dirs = os.listdir("data")
+idxc = []
+for d in dirs:
+    index = GPTVectorStoreIndex.load_from_disk(f'{d}.json')
+    tool_config = IndexToolConfig(
+                    index=index, 
+                    name=f"{d} Vector Index",
+                    description= str(index.query("What is a summary of these documents?")),
+            )
+    idxc.append(tool_config)
+
 toolkit = LlamaToolkit(
-    index_configs=indexes
+    index_configs=idxc
 )
+
+QA_PROMPT_TMPL = (
+    "Below is some information about ACM BPDC. This information was extracted using a language model, so it may be of varied accuracy. Using this and the question please come up with an accurate and relevant answer \n"
+    "---------------------\n"
+    "{context_str}"
+    "\n---------------------\n"
+    "Please answer the question: {query_str}\n"
+)
+QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
 
 memory = ConversationBufferMemory(memory_key="chat_history")
 llm = ChatOpenAI(model_name="gpt-3.5-turbo")
@@ -29,9 +41,12 @@ agent_chain = create_llama_chat_agent(
     toolkit,
     llm,
     memory=memory,
-    verbose=True
+    verbose=True,
+    text_qa_template=QA_PROMPT
 )
 
+response = agent_chain.run(input="You are a chatbot for the ACM student chapter at Bits Pilani, Dubai Campus (BPDC). Your name is ACM-Assistant. You must assist the user in any way possible. If available, you will be provided with certain context information that you must use to enhance your responses.")
+print(f'Agent: {response}')
 while True:
     text_input = input("User: ")
     # handle valueerror
