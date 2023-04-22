@@ -14,48 +14,16 @@ from llama_index.indices.query.query_transform.base import DecomposeQueryTransfo
 
 # Load indices from disk
 index_set = {}
-datas = ["Annual Reports", "Careers", "FAQ", "General Information"]
+datas = ["FAQ2", "Wiki"]
 for d in datas:
     cur_index = GPTVectorStoreIndex.load_from_disk(f'{d}.json')
     index_set[d] = cur_index
 
+# make far more detailed descriptions so much more segregated data
 index_summaries = [
-                    "Collection of all the Annual Reports of ACM BPDC Over the last 10 academic years ranging from 2010-2022",
-                    "List of positions available in the ACM Council, their descriptions, requirements and conditions",
-                    "List of frequently asked questions by ACM members about ACM events, workshops, membership and more",
-                    "General Information about the ACM BPDC Student Chapter"
+                    "Collection of common answers related to the internal workings at BPDC with details about the BPDC Library, Icebreakers, Clubs and associations such as Sports Club, Trebel, ACM, MTC, WSC Groove, CIIED, WIE, Toastmasters, Chimera, Creative Lab, Shades, The Editorial Board, Allure, Flummoxed Quizzing Club, AIChE, Paribhasha, MAD Club, Reflections, IFOR, EMC, Guild. and Events such as Jashn, BSF, IceBreakers etc.",
+                    "Overview of Bits Pilani Dubai Campus and extract from the Wikipedia. Has information on the history, academics, student life and culture, notable alumni, references and more"
                 ]
-
-# set number of output tokens
-llm_predictor = LLMPredictor(llm=ChatOpenAI(temperature=0, max_tokens=3982, model_name="gpt-3.5-turbo"))
-service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)
-graph = ComposableGraph.load_from_disk('datas.json', service_context=service_context)
-
-decompose_transform = DecomposeQueryTransform(
-    llm_predictor, verbose=True
-)
-
-query_configs = [
-    {
-        "index_struct_type": "simple_dict",
-        "query_mode": "default",
-        "query_kwargs": {
-            "similarity_top_k": 1,
-            # "include_summary": True
-        },
-        "query_transform": decompose_transform
-    },
-    {
-        "index_struct_type": "list",
-        "query_mode": "default",
-        "query_kwargs": {
-            "response_mode": "tree_summarize",
-            "verbose": True
-        }
-    },
-]
-
-
 
 # define toolkit
 index_configs = []
@@ -65,30 +33,18 @@ for y in datas:
         index=index_set[y], 
         name=f"Vector Index {y}",
         description=index_summaries[i],
-        index_query_kwargs={"similarity_top_k": 3},
         tool_kwargs={"return_direct": True, "return_sources": True},
     )
     index_configs.append(tool_config)
     i += 1
-    
-# graph config
-graph_config = GraphToolConfig(
-    graph=graph,
-    name=f"Graph Index",
-    description="useful for when you want to answer queries that require analyzing information about different parts of ACM",
-    query_configs=query_configs,
-    tool_kwargs={"return_direct": True, "return_sources": True},
-    return_sources=True
-)
 
 toolkit = LlamaToolkit(
-    index_configs=index_configs,
-    graph_configs=[graph_config]
+    index_configs=index_configs
 )
 
 
 QA_PROMPT_TMPL = (
-    "Below is some information about ACM BPDC. This information was extracted using a language model, so it may be of varied accuracy. Using this and the question please come up with an accurate and relevant answer \n"
+    "Below is some information about Bits Pilani, Dubai Campus (BPDC). Using this and the question please come up with an accurate and relevant answer. If you cannot answer accurately please say 'I Don't Know', do not try and make up an answer \n"
     "---------------------\n"
     "{context_str}"
     "\n---------------------\n"
@@ -97,7 +53,7 @@ QA_PROMPT_TMPL = (
 QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
 
 memory = ConversationBufferMemory(memory_key="chat_history")
-llm = ChatOpenAI(model_name="gpt-3.5-turbo")
+llm = ChatOpenAI(temperature=0.5, model_name="gpt-3.5-turbo")
 agent_chain = create_llama_chat_agent(
     toolkit,
     llm,
@@ -106,7 +62,7 @@ agent_chain = create_llama_chat_agent(
     text_qa_template=QA_PROMPT
 )
 
-response = agent_chain.run(input="You are a chatbot for the ACM student chapter at Bits Pilani, Dubai Campus (BPDC). Your name is ACM-Assistant. You must assist the user in any way possible. If available, you will be provided with certain context information that you must use to enhance your responses.")
+response = agent_chain.run(input="You are a chatbot for Bits Pilani, Dubai Campus (BPDC). Your name is BITSA. You must assist the user in any way possible. If available, you will be provided with certain context information that you must use to enhance your responses.")
 print(f'Agent: {response}')
 while True:
     text_input = input("User: ")
