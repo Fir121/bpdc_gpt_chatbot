@@ -43,14 +43,6 @@ toolkit = LlamaToolkit(
 )
 
 
-QA_PROMPT_TMPL = (
-    "Below is some information about Bits Pilani, Dubai Campus (BPDC). Using this and the question please come up with an accurate and relevant answer. If you cannot answer accurately please say 'I Don't Know', do not try and make up an answer \n"
-    "---------------------\n"
-    "{context_str}"
-    "\n---------------------\n"
-    "Please answer the question: {query_str}\n"
-)
-QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
 
 memory = ConversationBufferMemory(memory_key="chat_history")
 llm = ChatOpenAI(temperature=0.5, model_name="gpt-3.5-turbo")
@@ -58,12 +50,9 @@ agent_chain = create_llama_chat_agent(
     toolkit,
     llm,
     memory=memory,
-    verbose=True,
-    text_qa_template=QA_PROMPT
+    verbose=True
 )
 
-response = agent_chain.run(input="You are a chatbot for Bits Pilani, Dubai Campus (BPDC). Your name is BITSA. You must assist the user in any way possible. If available, you will be provided with certain context information that you must use to enhance your responses.")
-print(f'Agent: {response}')
 while True:
     text_input = input("User: ")
     # handle valueerror
