@@ -63,7 +63,13 @@ def save_chain(chain, fname):
         pickle.dump(chain.memory,f)
 
 def load_chain(fname):
-    with open("memorychains/"+fname,"wb") as f:
+    with open("memorychains/"+fname,"rb") as f:
         memory = pickle.load(f)
     return return_chain(memory)
+
+def none_parser(dataDict):
+    for d in dataDict:
+        if dataDict[d] == 'None':
+            dataDict[d] = None
+    return dataDict
 

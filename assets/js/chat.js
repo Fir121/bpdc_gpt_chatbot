@@ -59,9 +59,6 @@ const ask_gpt = async (message) => {
         window.scrollTo(0, 0);
         window.controller = new AbortController();
 
-        jailbreak    = document.getElementById("jailbreak")
-        model        = document.getElementById("model")
-        prompt_lock  = true
         window.text   = ``;
         window.token = message_id()
 
@@ -102,63 +99,29 @@ const ask_gpt = async (message) => {
         await new Promise(r => setTimeout(r, 1000));
         window.scrollTo(0, 0);
 
-        const response = await fetch(`/backend-api/v2/conversation`, { method: `POST`, signal: window.controller.signal,
+        const response = await fetch(`/`, { method: `POST`, signal: window.controller.signal,
             headers: {
-                    'content-type' : `application/json`,
-                    accept         : `text/event-stream`
+                'content-type' : `application/json`,
+                accept         : 'application/json, text/plain'
             },
             body: JSON.stringify({
-                conversation_id : window.conversation_id,
-                action          : `_ask`,
-                model           : model.options[model.selectedIndex].value,
-                jailbreak       : jailbreak.options[jailbreak.selectedIndex].value,
-                meta        : {
-                    id   : window.token,
-                    content : {
-                        conversation    : await get_conversation(window.conversation_id),
-                        internet_access : document.getElementById("switch").checked,
-                        content_type    : "text",
-                        parts           : [{
-                            content: message,
-                            role   : "user"
-                        }]
-                    }
-                }
+                fname : window.conversation_id,
+                message: message
             })
         })
     
-        const reader = response.body.getReader();
+        text = await response.json();
+        console.log(text)
+        text = text.message;
 
-        while (true) {
-            const { value, done } = await reader.read(); if (done) break;
-
-            chunk = new TextDecoder().decode(value);
-            
-            if (chunk.includes(`<form id="challenge-form" action="/backend-api/v2/conversation?`)) {
-                chunk = `cloudflare token expired, please refresh the page.`
-            }
-
-            text += chunk;
-
-            // const objects         = chunk.match(/({.+?})/g);
-
-            
-            // try { if (JSON.parse(objects[0]).success === false) throw new Error(JSON.parse(objects[0]).error) } catch (e) {}
-            
-            // objects.forEach((object) => {
-            //     console.log(object)
-            //     try { text += h2a(JSON.parse(object).content) } catch(t) { console.log(t); throw new Error(t)}
-            // });
-            
-            document.getElementById(`gpt_${window.token}`).innerHTML = markdown.render(text)
-            document.querySelectorAll(`code`).forEach((el) => {
-                hljs.highlightElement(el);
-            });
-            
-            window.scrollTo(0, 0);
-            message_box.scrollTo({ top: message_box.scrollHeight, behavior: 'auto' })
-        }
-
+        document.getElementById(`gpt_${window.token}`).innerHTML = markdown.render(text)
+        document.querySelectorAll(`code`).forEach((el) => {
+            hljs.highlightElement(el);
+        });
+        
+        window.scrollTo(0, 0);
+        message_box.scrollTo({ top: message_box.scrollHeight, behavior: 'auto' })
+        
         // if text contains :
         if (text.includes(`instead. Maintaining this website and API costs a lot of money`)) {
             document.getElementById(`gpt_${window.token}`).innerHTML = 'An error occured, please reload / refresh cache and try again.'
@@ -235,7 +198,7 @@ const delete_conversation = async (conversation_id) => {
 }
 
 const set_conversation = async (conversation_id) => {
-    history.pushState({}, null, `/chat/${conversation_id}`);
+    //history.pushState({}, null, `/`);
     window.conversation_id = conversation_id
 
     await clear_conversation()
@@ -244,8 +207,10 @@ const set_conversation = async (conversation_id) => {
 }
 
 const new_conversation = async () => {
-    history.pushState({}, null, `/chat/`);
-    window.conversation_id = uuid()
+    //history.pushState({}, null, `/`);
+    const response = await fetch("/get_code");
+    const jsonData = await response.json();
+    window.conversation_id = jsonData['fname'];
 
     await clear_conversation()
     await load_conversations(20, 0, true)
