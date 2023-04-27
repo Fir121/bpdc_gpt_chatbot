@@ -73,6 +73,12 @@ body {
     border: 1px solid var(--blur-border);
 }
 
+.logoholder{
+    text-align: center;
+    font-weight: bolder;
+    font-size: x-large;
+}
+
 .conversations {
     max-width: 260px;
     padding: var(--section-gap);

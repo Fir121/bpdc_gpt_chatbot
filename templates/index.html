@@ -5,14 +5,10 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0">
         <meta name="description" content="A conversational AI system that listens, learns, and challenges">
-        <meta property="og:title" content="ChatGPT">
-        <meta property="og:image" content="https://openai.com/content/images/2022/11/ChatGPT.jpg">
-        <meta property="og:description" content="A conversational AI system that listens, learns, and challenges">
-        <meta property="og:url" content="https://chat.acy.dev">
         <link rel="stylesheet" href="assets/css/style.css">
-        <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png">
         <link rel="manifest" href="assets/img/site.webmanifest">
         <script src="assets/js/icons.js"></script>
         <script src="assets/js/chat.js" defer></script>
@@ -57,7 +53,10 @@
         </style>
         <script src="assets/js/highlight.min.js"></script>
         <script src="assets/js/highlightjs-copy.min.js"></script>
-        <script>window.conversation_id = `{{chat_id}}`</script>
+        <script>
+            window.conversation_id = `{{fname}}`
+            window.message_response = `{{message_response}}`
+        </script>
         <title>ChatGPT</title>
     </head>
     <body>
@@ -78,9 +77,9 @@
                     </button>
                     <div class="info">
                         <i class="fa-regular fa-circle-info"></i>
-                        <span class="convo-title">By: @xtekky<br>
+                        <span class="convo-title">By: Firas & Anmol<br>
                             Version: 0.0.1-beta<br>
-                            Release: 2023-04-18<br>
+                            Release: 2023-04-27<br>
                         </span>
                     </div>
                 </div>
@@ -92,6 +91,9 @@
                         <i class="fa-regular fa-stop"></i>
                     </button>
                 </div>
+                <div class="logoholder">
+                    LOGO
+                </div>
                 <div class="box" id="messages">
                 </div>
                 <div class="user-input">
@@ -100,33 +102,6 @@
                         <div id="send-button">
                             <i class="fa-regular fa-paper-plane-top"></i>
                         </div>
-                    </div>
-                </div>
-                <div class="buttons">
-                    <div class="field">
-                        <input type="checkbox" id="switch"/>
-                        <label for="switch"></label>
-                        <span class="about">Web Access</span>
-                    </div>
-                    <div class="field">
-                        <select name="model" id="model">
-                            <option value="gpt-3.5-turbo" selected>gpt-3.5-turbo</option>
-                            <option value="gpt-4">gpt-4</option>
-                            <option value="gpt-3.5-turbo-0301">gpt-3.5-turbo-0301</option>
-                            <option value="gpt-4-0314">gpt-4-0314</option>
-                        </select>
-                        <!-- <span class="about">Model</span> -->
-                    </div>
-                    <div class="field">
-                        <select name="jailbreak" id="jailbreak">
-                            <option value="default" selected>default</option>
-                            <option value="gpt-math-1.0">math 1.0</option>
-                            <option value="gpt-dude-1.0">dude 1.0</option>
-                            <option value="gpt-dan-1.0">dan 1.0</option>
-                            <option value="gpt-dan-2.0">dan 2.0</option>
-                            <option value="gpt-dev-2.0">dev 2.0</option>
-                            <option value="gpt-evil-1.0">evil 1.0</option>
-                        </select>
                     </div>
                 </div>
             </div>
