@@ -3,3 +3,4 @@ chatbot/*
 data/*
 constants.py
 *.json
+memorychains/*

@@ -8,6 +8,7 @@ from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.chat_models import ChatOpenAI
 from llama_index.langchain_helpers.agents import LlamaToolkit, create_llama_chat_agent, IndexToolConfig, LlamaIndexTool
 from langchain.chat_models import ChatOpenAI
+import pickle
 
 # try instead keywordindex
 # use custom QuestionAnswerPrompt
@@ -35,7 +36,10 @@ QA_PROMPT_TMPL = (
 )
 QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
 
-memory = ConversationBufferMemory(memory_key="chat_history")
+
+with open("saveddata.json","rb") as f:
+    memory = pickle.load(f)
+#memory = ConversationBufferMemory(memory_key="chat_history")
 llm = ChatOpenAI(model_name="gpt-3.5-turbo")
 agent_chain = create_llama_chat_agent(
     toolkit,
@@ -44,6 +48,7 @@ agent_chain = create_llama_chat_agent(
     verbose=True,
     text_qa_template=QA_PROMPT
 )
+
 
 response = agent_chain.run(input="You are a chatbot for the ACM student chapter at Bits Pilani, Dubai Campus (BPDC). Your name is ACM-Assistant. You must assist the user in any way possible. If available, you will be provided with certain context information that you must use to enhance your responses.")
 print(f'Agent: {response}')
