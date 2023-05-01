@@ -1,6 +1,7 @@
 import flask
 from flask import render_template, session, request, abort, send_from_directory, jsonify
 import backend
+import re
 
 app = flask.Flask(__name__)
 
@@ -19,6 +20,8 @@ def main_page():
         message = request_content.get("message")
         if message is None:
             return abort(400)
+        insensitive_hippo = re.compile(re.escape('bpdc'), re.IGNORECASE)
+        message = insensitive_hippo.sub('Bits Pilani Dubai Campus', message)
         message_response = chain.run(message) # error handle here
         backend.save_chain(chain, fname)
         return jsonify({"message":message_response})

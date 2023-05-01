@@ -3,7 +3,7 @@ import os
 os.environ["OPENAI_API_KEY"] = constants.openapi_key
 
 
-from llama_index import GPTVectorStoreIndex
+from llama_index import GPTVectorStoreIndex, QuestionAnswerPrompt
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.chat_models import ChatOpenAI
 from llama_index.langchain_helpers.agents import LlamaToolkit, create_llama_chat_agent, IndexToolConfig
@@ -40,13 +40,24 @@ toolkit = LlamaToolkit(
     index_configs=index_configs
 )
 
+QA_PROMPT_TMPL = (
+    "Context information is below. \n"
+    "---------------------\n"
+    "{context_str}"
+    "\n---------------------\n"
+    "Given the context information and common sense, and chat history but not prior knowledge"
+    "answer the question. If you don't know the answer, reply 'I don't know': {query_str}\n"
+)
+QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
+
 def return_chain(memory):
-    llm = ChatOpenAI(temperature=0.5, model_name="gpt-3.5-turbo")
+    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
     agent_chain = create_llama_chat_agent(
         toolkit,
         llm,
         memory=memory,
-        verbose=True
+        verbose=True,
+        text_qa_template=QA_PROMPT
     )
     return agent_chain
 
