@@ -1,5 +1,4 @@
 *.pdf
 data/*
 constants.py
-*.json
 memorychains/*
