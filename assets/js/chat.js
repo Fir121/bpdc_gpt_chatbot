@@ -55,6 +55,13 @@ const remove_cancel_button = async () => {
     }, 300);
 }
 
+const synth = window.speechSynthesis;
+function speak_message(text){
+    var utterance1 = new SpeechSynthesisUtterance(text);
+    synth.cancel();
+    synth.speak(utterance1);
+}
+
 const ask_gpt = async (message) => {
     try {
         message_input.value = ``;
@@ -119,6 +126,7 @@ const ask_gpt = async (message) => {
         text = await response.json();
         console.log(text)
         text = text.message;
+        speak_message(text);
 
         document.getElementById(`gpt_${window.token}`).innerHTML = markdown.render(text)
         document.querySelectorAll(`code`).forEach((el) => {

@@ -1,7 +1,7 @@
 import flask
 from flask import render_template, session, request, abort, send_from_directory, jsonify
 import backend
-import re
+import re, ast
 
 app = flask.Flask(__name__)
 
@@ -24,6 +24,8 @@ def main_page():
         message = insensitive_hippo.sub('Bits Pilani Dubai Campus', message)
         message_response = chain.run(message) # error handle here
         backend.save_chain(chain, fname)
+        if message_response[0] == "{":
+            message_response = ast.literal_eval(message_response)
         if type(message_response) == dict:
             message_response = message_response["answer"] 
         return jsonify({"message":message_response})
