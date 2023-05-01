@@ -24,6 +24,8 @@ def main_page():
         message = insensitive_hippo.sub('Bits Pilani Dubai Campus', message)
         message_response = chain.run(message) # error handle here
         backend.save_chain(chain, fname)
+        if type(message_response) == dict:
+            message_response = message_response["answer"] 
         return jsonify({"message":message_response})
 
     return render_template("index.html", fname=None)

@@ -28,15 +28,21 @@ const delete_conversations = async () => {
 }
 
 const handle_ask = async () => {
+    prompt_lock = true;
     message_input.style.height = `80px`;
-    message_input.focus();
 
     window.scrollTo(0, 0);
-    let message = message_input.value;
+    let message = message_input.value.trim();
 
     if (message.length > 0) {
+        message_input.blur();
         message_input.value = ``;
+        message_input.focus(); 
+        message_input.selectionStart = 0;
         await ask_gpt(message);
+    }
+    else{
+        prompt_lock = false;
     }
 }
 
@@ -133,6 +139,7 @@ const ask_gpt = async (message) => {
         message_box.scrollTop = message_box.scrollHeight
         await remove_cancel_button()
         prompt_lock = false
+        console.log(prompt_lock)
 
         await load_conversations(20, 0)
         window.scrollTo(0, 0);
@@ -338,7 +345,6 @@ const message_id = () => {
 }
 
 window.onload = async () => {
-    load_settings_localstorage();
 
     conversations = 0
     for (let i = 0; i < localStorage.length; i++) {
@@ -362,6 +368,7 @@ window.onload = async () => {
     message_input.addEventListener(`keydown`, async (evt) => {
         if (prompt_lock) return;
         if (evt.keyCode === 13 && !evt.shiftKey) {
+            evt.preventDefault();
             console.log('pressed enter');
             await handle_ask();
         } else {
@@ -376,7 +383,6 @@ window.onload = async () => {
         await handle_ask();
     });
 
-    register_settings_localstorage();
 }
 
 document.querySelector('.mobile-sidebar').addEventListener('click', (event) => {
@@ -392,39 +398,3 @@ document.querySelector('.mobile-sidebar').addEventListener('click', (event) => {
 
     window.scrollTo(0, 0);
 })
-
-const register_settings_localstorage = async () => {
-    settings_ids = ['switch', 'model','jailbreak']
-    settings_elements = settings_ids.map(id => document.getElementById(id))
-    settings_elements.map(element => element.addEventListener(`change`, async (event) => {
-        switch(event.target.type) {
-            case 'checkbox':
-                localStorage.setItem(event.target.id, event.target.checked)
-                break
-            case 'select-one':
-                localStorage.setItem(event.target.id, event.target.selectedIndex)
-                break
-            default:
-                console.warn('Unresolved element type')
-        }
-    }))
-}
-
-const load_settings_localstorage = async () => {
-    settings_ids = ['switch', 'model','jailbreak']
-    settings_elements = settings_ids.map(id => document.getElementById(id))
-    settings_elements.map(element => {
-        if(localStorage.getItem(element.id)) {
-            switch(element.type) {
-                case 'checkbox':
-                    element.checked = localStorage.getItem(element.id) === 'true'
-                    break
-                case 'select-one':
-                    element.selectedIndex = parseInt(localStorage.getItem(element.id))
-                    break
-                default:
-                    console.warn('Unresolved element type')
-            }
-        }
-    })
-}
