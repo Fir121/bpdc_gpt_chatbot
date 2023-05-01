@@ -2,7 +2,7 @@
 
 Still in initial stage - testing.
 
-Uses chatgpt API to activate a chatbot which is trained on BPDC data. Flask app.
+Uses chatgpt API to activate a chatbot which is trained on BPDC data. Flask app. Venv included at chatbot/
 
 ## Instructions
 
