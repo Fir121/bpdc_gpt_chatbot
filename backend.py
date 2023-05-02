@@ -12,22 +12,22 @@ import time, pickle
 
 # Load indices from disk
 index_set = {}
-datas = ["FAQ", "Wiki", "About","Program Information", "Fees and Scholarships", "Visa Information", "Career","Clubs","Other FAQ"]
+datas = ['About', 'Career', 'Clubs', 'FAQ', 'First Degree Programmes', 'Higher Degree Programmes', 'Phd Programmes', 'Visa Information', 'Wiki']
 for d in datas:
     cur_index = GPTVectorStoreIndex.load_from_disk(f'{d}.json')
     index_set[d] = cur_index
 
 # make far more detailed descriptions so much more segregated data
 index_summaries = [
-                    "Collection of common answers related to the internal workings at BPDC with details about the BPDC Library, WebOPAC portal, Question Papers. And Events such as BSF, IceBreakers etc.",
-                    "Overview of Bits Pilani Dubai Campus and extract from the Wikipedia. Has information on the director, chancellor, vice chancellor, campus size and location, campus affiliations, overview, history, campus and DIAC (Dubai International Academic City), Hostels, Labs, Departments, Practice School (PS 1 AND 2), Events, DIAC Residential Halls, and notable alumni",
-                    "Simple description About Bits Pilani Dubai extracted from the BPDC Website including Mission, Vision, Policy and a general overview",
-                    "Detailed Information on all the degree programs at BPDC and their respective admission criteria. Includes details on Bachelor Of Engineering (First Degree), Master Of Engineering (Higher Degree), MBA, PhD programs",
-                    "All details about the fee structure, scholarships, payment plan, concessions etc. for the degree programs (First and Higher) at BPDC",
-                    "Details about UAE Residence Visa which is required to study at BPDC, how to apply and get this visa",
+                    "Simple description About Bits Pilani Dubai extracted from the BPDC Website including Mission, Vision, Policy and a general overview great to answer questions like what is bits pilani",
                     "All about careers and placements at BPDC, in depth information about the Practice School (PS) program at BPDC",
                     "Details on all the clubs, associations and chapters at BPDC, with details on clubs such as Sports, Scientific Associations, Cultural Activites, MAD (social and environmental club making a difference), public speaking and literary, dance club (groove), drama club (paribasha), art club (shades), music club (trebel), design club, fashion club (allure), photography club (reflexions), quiz club (flummoxed), supernova (astronomy), wall street club, ieee, acm and sae chapters",
-                    "More commonly asked questions about BPDC related to Admissions, Fees, Hostel, Visa, and other including transfers, visa, costs, dress code, insurance, prospects and more"
+                    "A great index in case none of the other indexes are appropriate. Frequently asked questions about BPDC related to Admissions, Fees, Hostel, Visa, and other including transfers, visa, costs, dress code, insurance, prospects, BPDC Library, WebOPAC portal, Question Papers. And Events such as BSF, IceBreakers etc.",
+                    "Details on all the First Degree (FD), Bachelor of Engineering (B.E.) programmes at BPDC, their fees, eligibility, scholarships, concessions, special info, detailed writeups on each program",
+                    "Details on all the Higher Degree (FD), Master of Engineering (M.E.) and M.B.A. programmes at BPDC, their fees, eligibility, scholarships, concessions, special info, detailed writeups on each program",
+                    "Details on the PHD program at BPDC its eligibility and general information",
+                    "Details about UAE Residence Visa which is required to study at BPDC, how to apply and get this visa",
+                    "Overview of Bits Pilani Dubai Campus and extract from the Wikipedia. Has information on the director, chancellor, vice chancellor, campus size and location, campus affiliations, overview, history, campus and DIAC (Dubai International Academic City), Hostels, Labs, Departments, Practice School (PS 1 AND 2), Events, DIAC Residential Halls, and notable alumni",
                 ]
 
 # define toolkit
