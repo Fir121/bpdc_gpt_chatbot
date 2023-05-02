@@ -78,6 +78,10 @@ body {
     font-weight: bolder;
     font-size: x-large;
 }
+.logoholder img{
+    height: 7vh;
+    width: auto;
+}
 
 .conversations {
     max-width: 260px;

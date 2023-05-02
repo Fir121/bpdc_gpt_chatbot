@@ -1,7 +1,1 @@
-fix fees since it is in table format in docx, bring it to text
-
-remove all data about the other degree programs, keep it simple for them and let them each have an index
-
-make First degree courses data the priority
-
-Ensure indexes are named generally not specifically
+add some help queries and info in beginning ie: dont use acronyms, give as many details about yourself as possible etc.
