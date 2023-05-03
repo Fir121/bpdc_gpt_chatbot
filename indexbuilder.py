@@ -12,3 +12,7 @@ for d in dirs:
     index = GPTVectorStoreIndex.from_documents(documents)
     index.save_to_disk(f'{d}.json')
 
+"""
+documents = SimpleDirectoryReader(f'data/FAQ').load_data()
+index = GPTVectorStoreIndex.from_documents(documents)
+index.save_to_disk(f'FAQ.json')"""
