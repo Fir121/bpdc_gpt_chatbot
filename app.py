@@ -1,7 +1,7 @@
 import flask
 from flask import render_template, session, request, abort, send_from_directory, jsonify
 import backend
-
+# implement /video, /contrib and /admin
 app = flask.Flask(__name__)
 
 @app.route('/', methods=['GET','POST'])

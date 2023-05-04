@@ -122,7 +122,7 @@ const ask_gpt = async (message) => {
 
         stop_generating.classList.remove(`stop_generating-hidden`);
     
-        await remove_thumbs();
+        remove_thumbs();
         message_box.innerHTML += `
             <div class="message">
                 <div class="user">
@@ -455,3 +455,20 @@ document.querySelector('.mobile-sidebar').addEventListener('click', (event) => {
 
     window.scrollTo(0, 0);
 })
+
+const targetNode = document.getElementById("messages");
+
+const config = { attributes: true, childList: true, subtree: true };
+
+const callback = (mutationList, observer) => {
+  var tar = document.getElementById("helptext");
+  if (targetNode.childElementCount != 1 && tar.style.display != "none"){
+    tar.style.display = "none";
+  }
+  else if(targetNode.childElementCount == 1){
+    tar.style.display = "";
+  }
+};
+
+const observer = new MutationObserver(callback);
+observer.observe(targetNode, config);
