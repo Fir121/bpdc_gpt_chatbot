@@ -9,6 +9,7 @@ from langchain.chat_models import ChatOpenAI
 from llama_index.langchain_helpers.agents import LlamaToolkit, create_llama_chat_agent, IndexToolConfig
 from langchain.chat_models import ChatOpenAI
 import time, pickle
+import mysql.connector as ms
 
 # Load indices from disk
 index_set = {}
@@ -57,6 +58,15 @@ QA_PROMPT_TMPL = (
 )
 QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
 
+'''
+create table chat(chat_id int auto_increment, fname varchar(30), feedback_count int default 0, primary key(chat_id));
+create table conversation(chat_id int, user_message text, bot_message text, foreign key (chat_id) references chat(chat_id) on delete cascade);
+'''
+def create_cursor():
+    mydb = ms.connect(host='localhost', user='root', password=constants.mysqlpassword, database="chatbot", autocommit=True)
+    cursor = mydb.cursor(dictionary=True, buffered=True)
+    return mydb, cursor
+
 def return_chain(memory):
     llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo")
     agent_chain = create_llama_chat_agent(
@@ -74,13 +84,32 @@ def create_chain():
     fname = f"{time.time()}.pkl"
     with open("memorychains/"+fname,"wb") as f:
         pickle.dump(agc.memory,f)
-    return agc, fname
+    mydb, cursor = create_cursor()
+    cursor.execute("insert into chat(fname) values(%s)",(fname,))
+    cursor.execute("select LAST_INSERT_ID() as chat_id")
+    data = cursor.fetchone()
+    chat_id = data["chat_id"]
+    cursor.close()
+    mydb.close()
+    return agc, chat_id
 
-def save_chain(chain, fname):
+def save_chain(chain, chat_id):
+    mydb, cursor = create_cursor()
+    cursor.execute("select fname from chat where chat_id=%s", (chat_id,))
+    data = cursor.fetchone()
+    fname = data["fname"]
+    cursor.close()
+    mydb.close()
     with open("memorychains/"+fname,"wb") as f:
         pickle.dump(chain.memory,f)
 
-def load_chain(fname):
+def load_chain(chat_id):
+    mydb, cursor = create_cursor()
+    cursor.execute("select fname from chat where chat_id=%s", (chat_id,))
+    data = cursor.fetchone()
+    fname = data["fname"]
+    cursor.close()
+    mydb.close()
     with open("memorychains/"+fname,"rb") as f:
         memory = pickle.load(f)
     return return_chain(memory)
@@ -91,3 +120,28 @@ def none_parser(dataDict):
             dataDict[d] = None
     return dataDict
 
+def log_feedback(chat_id):
+    mydb, cursor = create_cursor()
+    cursor.execute("update chat set feedback_count=feedback_count+1 where chat_id=%s",(chat_id,))
+    cursor.close()
+    mydb.close()
+    return True
+
+def return_output(message, chain, chat_id):
+    try:
+        message_response = chain.run(message)
+    except Exception as e:
+        print(e)
+        return "Sorry, something went wrong!"
+    save_chain(chain, chat_id)
+    if message_response[0] == "{":
+        message_response = ast.literal_eval(message_response)
+    if type(message_response) == dict:
+        message_response = message_response["answer"]
+    
+    mydb, cursor = create_cursor()
+    cursor.execute("insert into conversation values(%s,%s,%s)",(chat_id,message,message_response))
+    cursor.close()
+    mydb.close()
+
+    return message_response

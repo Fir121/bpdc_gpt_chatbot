@@ -62,6 +62,33 @@ function speak_message(text){
     synth.speak(utterance1);
 }
 
+function remove_thumbs(){
+    var allelems = document.getElementsByClassName("feedback");
+    for (var i=0; i<allelems.length; i++){
+        allelems[i].remove();
+    }
+}
+
+async function giveFeedback(e){
+    var telem = document.getElementsByClassName("feedback-button-icon")[0];
+    if (telem.dataset.used == "0"){
+        telem.className = '';
+        for (const x of ["fa", "fa-thumbs-down", "fa-2x","feedback-button-icon"]){
+            telem.classList.add(x);
+        }
+        telem.dataset.used = "1";
+        const response = await fetch(`/feedback`, { method: `POST`,
+            headers: {
+                'content-type' : `application/json`,
+                accept         : 'application/json, text/plain'
+            },
+            body: JSON.stringify({
+                chat_id : window.conversation_id,
+            })
+        })
+    }
+}
+
 const ask_gpt = async (message) => {
     try {
         message_input.value = ``;
@@ -77,6 +104,7 @@ const ask_gpt = async (message) => {
 
         stop_generating.classList.remove(`stop_generating-hidden`);
     
+        await remove_thumbs();
         message_box.innerHTML += `
             <div class="message">
                 <div class="user">
@@ -104,6 +132,9 @@ const ask_gpt = async (message) => {
                 <div class="content" id="gpt_${window.token}">
                     <div id="cursor"></div>
                 </div>
+                <div class="content feedback" style="margin-left:auto" id="gpt_${window.token}_feedback">
+                    <button class="feedback-button" onclick="giveFeedback()"><i class="fa fa-thumbs-o-down fa-2x feedback-button-icon" data-used="0"></i></button>
+                </div>
             </div>
         `;
     
@@ -118,7 +149,7 @@ const ask_gpt = async (message) => {
                 accept         : 'application/json, text/plain'
             },
             body: JSON.stringify({
-                fname : window.conversation_id,
+                chat_id : window.conversation_id,
                 message: message
             })
         })
@@ -225,7 +256,7 @@ const new_conversation = async () => {
     //history.pushState({}, null, `/`);
     const response = await fetch("/get_code");
     const jsonData = await response.json();
-    window.conversation_id = jsonData['fname'];
+    window.conversation_id = jsonData['chat_id'];
 
     await clear_conversation()
     await load_conversations(20, 0, true)
