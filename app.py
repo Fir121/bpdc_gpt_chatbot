@@ -1,7 +1,6 @@
 import flask
 from flask import render_template, session, request, abort, send_from_directory, jsonify
 import backend
-import re, ast
 
 app = flask.Flask(__name__)
 
@@ -20,8 +19,6 @@ def main_page():
         message = request_content.get("message")
         if message is None:
             return abort(400)
-        simplification = re.compile(re.escape('bpdc'), re.IGNORECASE)
-        message = simplification.sub('Bits Pilani Dubai Campus', message)
         message_response = backend.return_output(message, chain, chat_id)
         return jsonify({"message":message_response})
 

@@ -27,6 +27,7 @@ const delete_conversations = async () => {
     await new_conversation()
 }
 
+
 const handle_ask = async () => {
     prompt_lock = true;
     message_input.style.height = `80px`;
@@ -56,10 +57,27 @@ const remove_cancel_button = async () => {
 }
 
 const synth = window.speechSynthesis;
+var muted = false;
 function speak_message(text){
-    var utterance1 = new SpeechSynthesisUtterance(text);
-    synth.cancel();
-    synth.speak(utterance1);
+    if (!muted){
+        var utterance1 = new SpeechSynthesisUtterance(text);
+        synth.cancel();
+        synth.speak(utterance1);
+    }
+}
+
+const toggle_mute = () => {
+    if (!muted){
+        synth.cancel();
+        muted = true;
+        document.getElementById("mute").style.display = "none";
+        document.getElementById("unmute").style.display = "";
+    }
+    else{
+        muted = false;
+        document.getElementById("mute").style.display = "";
+        document.getElementById("unmute").style.display = "none";
+    }
 }
 
 function remove_thumbs(){

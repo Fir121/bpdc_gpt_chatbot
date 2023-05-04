@@ -10,6 +10,7 @@ from llama_index.langchain_helpers.agents import LlamaToolkit, create_llama_chat
 from langchain.chat_models import ChatOpenAI
 import time, pickle
 import mysql.connector as ms
+import re, ast
 
 # Load indices from disk
 index_set = {}
@@ -60,7 +61,7 @@ QA_PROMPT = QuestionAnswerPrompt(QA_PROMPT_TMPL)
 
 '''
 create table chat(chat_id int auto_increment, fname varchar(30), feedback_count int default 0, primary key(chat_id));
-create table conversation(chat_id int, user_message text, bot_message text, foreign key (chat_id) references chat(chat_id) on delete cascade);
+create table conversation(conversation_id int auto_increment, chat_id int, user_message text, bot_message text, primary key(conversation_id), foreign key (chat_id) references chat(chat_id) on delete cascade);
 '''
 def create_cursor():
     mydb = ms.connect(host='localhost', user='root', password=constants.mysqlpassword, database="chatbot", autocommit=True)
@@ -128,6 +129,9 @@ def log_feedback(chat_id):
     return True
 
 def return_output(message, chain, chat_id):
+    simplification = re.compile(re.escape('bpdc'), re.IGNORECASE)
+    message = simplification.sub('Bits Pilani Dubai Campus', message)
+    
     try:
         message_response = chain.run(message)
     except Exception as e:
@@ -140,7 +144,7 @@ def return_output(message, chain, chat_id):
         message_response = message_response["answer"]
     
     mydb, cursor = create_cursor()
-    cursor.execute("insert into conversation values(%s,%s,%s)",(chat_id,message,message_response))
+    cursor.execute("insert into conversation(chat_id, user_message, bot_message) values(%s,%s,%s)",(chat_id,message,message_response))
     cursor.close()
     mydb.close()
 
