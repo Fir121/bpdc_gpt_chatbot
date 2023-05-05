@@ -96,7 +96,7 @@ body {
 
 .previewtext .exp a{
     text-decoration: none;
-    color: inherit;
+    color: #a4ceff;
 }
 .previewtext .exp a:hover{
     color: #c7a2ff;

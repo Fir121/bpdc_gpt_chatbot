@@ -149,3 +149,19 @@ def return_output(message, chain, chat_id):
     mydb.close()
 
     return message_response
+
+def get_chats():
+    mydb, cursor = create_cursor()
+    cursor.execute("select distinct chat_id, feedback_count from chat natural join conversation order by feedback_count desc")
+    data = cursor.fetchall()
+    cursor.close()
+    mydb.close()
+    return data
+
+def get_conversation(chat_id):
+    mydb, cursor = create_cursor()
+    cursor.execute("select * from conversation where chat_id=%s",(chat_id,))
+    data = cursor.fetchall()
+    cursor.close()
+    mydb.close()
+    return data

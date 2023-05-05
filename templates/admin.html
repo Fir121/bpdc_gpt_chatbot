@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0">
+        <meta name="description" content="A conversational AI system that listens, learns, and challenges">
+        <link rel="stylesheet" href="assets/css/style.css">
+        <link rel="icon" type="image/png" href="assets/img/bpdcico.png">
+        <script src="assets/js/icons.js"></script>
+        <script src="assets/js/admin.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/markdown-it@latest/dist/markdown-it.min.js"></script>
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@latest/build/styles/base16/dracula.min.css">
+        <script>
+            const user_image        = `<img src="assets/img/user.png" alt="User Avatar">`;
+            const gpt_image         = `<img src="assets/img/gpt.png" alt="GPT Avatar">`;
+        </script>
+        <style>
+            .hljs {
+                color: #e9e9f4;
+                background: #28293629;
+                border-radius: var(--border-radius-1);
+                border: 1px solid var(--blur-border);
+                font-size: 15px;
+            }
+
+            #message-input {
+                margin-right: 30px;
+                height: 80px;
+            }
+
+            #message-input::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            /* Track */
+            #message-input::-webkit-scrollbar-track {
+                background: #f1f1f1; 
+            }
+            
+            /* Handle */
+            #message-input::-webkit-scrollbar-thumb {
+                background: #c7a2ff; 
+            }
+
+            /* Handle on hover */
+            #message-input::-webkit-scrollbar-thumb:hover {
+                background: #8b3dff; 
+            }
+        </style>
+        <script src="assets/js/highlight.min.js"></script>
+        <script src="assets/js/highlightjs-copy.min.js"></script>
+        <title>BITSA Admin Panel</title>
+   </head>
+    <body>
+        <div class="gradient"></div>
+        <div class="row">
+            <div class="box conversations">
+                <div class="top">
+                    {% for chat in chats %}
+                    <a href="/admin/{{chat['chat_id']}}">
+                        <div class="convo">
+                            <div class="left">
+                                <i class="fa-regular fa-comments"></i>
+                                <span class="convo-title">Negative Feedback: {{chat['feedback_count']}}</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                <div class="bottom_buttons">
+                    <div class="info">
+                        <i class="fa-regular fa-circle-info"></i>
+                        <span class="convo-title">By: Firas & Anmol<br>
+                            Version: 0.0.2-beta<br>
+                            Release: 2023-04-27<br>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="conversation">
+                <div class="logoholder">
+                    <img src="/assets/img/bpdc copy.png">
+                </div>
+                <div class="box" id="messages">
+                    {% for conversation in conversations %}
+                        <div class="message">
+                            <div class="user">
+                                <img src="assets/img/user.png" alt="User Avatar">
+                                <i class="fa-regular fa-phone-arrow-up-right"></i>
+                            </div>
+                            <div class="content"> 
+                                {{conversation['user_message']}}
+                            </div>
+                        </div>
+                        <div class="message">
+                            <div class="user">
+                                <img src="assets/img/gpt.png" alt="GPT Avatar">
+                                <i class="fa-regular fa-phone-arrow-up-right"></i>
+                            </div>
+                            <div class="content"> 
+                                {{conversation['bot_message']}}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="mobile-sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </body>
+</html>

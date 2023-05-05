@@ -28,6 +28,14 @@ def main_page():
 def get_new_convo():
     return jsonify({"chat_id":backend.create_chain()[1]})
 
+@app.route('/admin', methods=['GET'])
+def admin():
+    return render_template("admin.html", chats=backend.get_chats(), conversations=[])
+
+@app.route('/admin/<chat_id>', methods=['GET'])
+def admin_chat(chat_id):
+    return render_template("admin.html", chats=backend.get_chats(), conversations=backend.get_conversation(chat_id))
+
 @app.route('/feedback', methods=['POST'])
 def log_feedback():
     chat_id = request.json["chat_id"]
@@ -36,6 +44,9 @@ def log_feedback():
 
 @app.route('/assets/<path:path>')
 def send_report(path):
+    return send_from_directory('assets', path)
+@app.route('/admin/assets/<path:path>')
+def send_report_admin(path):
     return send_from_directory('assets', path)
 
 if __name__ == "__main__":
