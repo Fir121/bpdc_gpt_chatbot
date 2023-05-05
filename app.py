@@ -1,5 +1,5 @@
 import flask
-from flask import render_template, session, request, abort, send_from_directory, jsonify
+from flask import render_template, session, request, abort, send_from_directory, jsonify, redirect
 import backend
 # implement /video, /contrib and /admin
 app = flask.Flask(__name__)
@@ -41,6 +41,14 @@ def log_feedback():
     chat_id = request.json["chat_id"]
     backend.log_feedback(chat_id)
     return {"status":"success"}
+
+@app.route('/video', methods=['GET'])
+def video():
+    return redirect("https://drive.google.com/file/d/1ek0TdOn1kRfJs1AUCM9HtOIpgGzvvx-i/view?usp=sharing")
+
+@app.route('/contribs', methods=['GET'])
+def contribs():
+    return redirect("https://forms.gle/VzHAUu8iN3WCvaRA8")
 
 @app.route('/assets/<path:path>')
 def send_report(path):
