@@ -94,6 +94,11 @@ body {
     padding: 25px;
 }
 
+@media screen and (max-width: 990px) {
+    .previewtext .exp{
+        width: 90%;
+    }
+}
 .previewtext .exp a{
     text-decoration: none;
     color: #a4ceff;
