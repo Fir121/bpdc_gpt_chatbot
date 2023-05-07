@@ -1,5 +1,7 @@
 const query             = (obj) => Object.keys(obj).map(k => encodeURIComponent(k) + '=' + encodeURIComponent(obj[k])).join('&');
-const markdown          = window.markdownit();
+const markdown          = window.markdownit({
+    linkify: true,
+  });
 const message_box       = document.getElementById(`messages`);
 const message_input     = document.getElementById(`message-input`);
 const box_conversations = document.querySelector(`.top`)

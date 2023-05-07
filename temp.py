@@ -12,6 +12,7 @@ from llama_index.indices.composability import ComposableGraph
 from llama_index.indices.query.query_transform.base import DecomposeQueryTransform
 
 
-index = GPTVectorStoreIndex.load_from_disk(f'FAQ2.json')
-r = index.query("What is BSF?")
+index = GPTVectorStoreIndex.load_from_disk(f'Clubs.json')
+r = index.query("What is ACM?")
+
 print(r)
